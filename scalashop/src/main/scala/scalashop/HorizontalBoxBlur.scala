@@ -2,6 +2,7 @@ package scalashop
 
 import org.scalameter._
 import common._
+import scalashop.VerticalBoxBlur.blur
 
 object HorizontalBoxBlurRunner {
 
@@ -61,7 +62,15 @@ object HorizontalBoxBlur {
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
   // TODO implement using the `task` construct and the `blur` method
 
-  ???
+    val stripHeight = src.height / numTasks max 1
+    var ys = (0 to src.height by stripHeight).toList
+    if (src.width % numTasks != 0) ys = ys :+ src.height
+    val ranges = ys.zip(ys.tail)
+    val tasks = ranges.map(strip => task {
+      blur(src, dst, strip._1, strip._2, radius)
+    })
+
+    tasks.map(t => t.join())
   }
 
 }
