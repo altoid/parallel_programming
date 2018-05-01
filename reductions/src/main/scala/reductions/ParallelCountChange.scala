@@ -45,8 +45,20 @@ object ParallelCountChange {
   /** Returns the number of ways change can be made from the specified list of
    *  coins for the specified amount of money.
    */
-  def countChange(money: Int, coins: List[Int]): Int = {
-    ???
+  def countChange(amount: Int, coins: List[Int]): Int = {
+
+    val ncoins = coins.length
+
+    if (amount == 0) 1
+    else if (ncoins == 0) 0
+    else if (amount < 0) 0
+    else {
+      val total1 = countChange(amount, coins.tail)
+      val total2 = countChange(amount - coins.head, coins)
+
+      val result = total1 + total2
+      result
+    }
   }
 
   type Threshold = (Int, List[Int]) => Boolean
