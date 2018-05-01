@@ -57,15 +57,41 @@ object ParallelParenthesesBalancing {
    */
   def parBalance(chars: Array[Char], threshold: Int): Boolean = {
 
-    def traverse(idx: Int, until: Int, arg1: Int, arg2: Int) /*: ???*/ = {
-      ???
+    def traverse(idx: Int, until: Int, arg1: Int, arg2: Int): (Int, Int) = {
+      // returns a pair of ints.  first is number of unmatched left parens,
+      // second is number of unmatched right parens.
+
+      var stack = List[Char]()
+
+      for (i <- idx until until) {
+        if (chars(i) == '(') {
+          stack = chars(i) :: stack
+        }
+        else if (chars(i) == ')') {
+          stack = stack match {
+            case '(' :: t => stack.tail
+            case _ => ')' :: stack
+          }
+        }
+      }
+      val (left, right) = stack.partition(_ == '(')
+      (left.length, right.length)
     }
 
-    def reduce(from: Int, until: Int) /*: ???*/ = {
-      ???
+    def reduce(from: Int, until: Int): (Int, Int) = {
+      if (until - from <= threshold) {
+        traverse(from, until, 0, 0)
+      }
+      else {
+        val mid = from + (until - from) / 2
+        val (l, r) = parallel(reduce(from, mid), reduce(mid, until))
+
+        val matched_in_both = l._1 min r._2
+        (l._1 + r._1 - matched_in_both, l._2 + r._2 - matched_in_both)
+      }
     }
 
-    reduce(0, chars.length) == ???
+    reduce(0, chars.length) == (0, 0)
   }
 
   // For those who want more:
