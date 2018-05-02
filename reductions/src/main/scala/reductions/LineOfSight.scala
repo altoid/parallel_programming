@@ -34,7 +34,11 @@ object LineOfSight {
   def max(a: Float, b: Float): Float = if (a > b) a else b
 
   def lineOfSight(input: Array[Float], output: Array[Float]): Unit = {
-    ???
+    var maxTan = 0f
+    for (i <- 0 until input.length) {
+      maxTan = maxTan max (input(i) / (1 max i))
+      output(i) = maxTan
+    }
   }
 
   sealed abstract class Tree {
@@ -47,10 +51,14 @@ object LineOfSight {
 
   case class Leaf(from: Int, until: Int, maxPrevious: Float) extends Tree
 
-  /** Traverses the specified part of the array and returns the maximum angle.
+  /** Traverses the specified part of the array and returns the maximum tangent.
    */
   def upsweepSequential(input: Array[Float], from: Int, until: Int): Float = {
-    ???
+    var maxTan = 0f
+    for (i <- from until until) {
+      maxTan = maxTan max (input(i) / (1 max i))
+    }
+    maxTan
   }
 
   /** Traverses the part of the array starting at `from` and until `end`, and
@@ -72,7 +80,11 @@ object LineOfSight {
    */
   def downsweepSequential(input: Array[Float], output: Array[Float],
     startingAngle: Float, from: Int, until: Int): Unit = {
-    ???
+    var maxTan = input(from) / (from max 1)
+    for (i <- from until until) {
+      maxTan = maxTan max (input(i) / (1 max i))
+      output(i) = maxTan
+    }
   }
 
   /** Pushes the maximum angle in the prefix of the array to each leaf of the
