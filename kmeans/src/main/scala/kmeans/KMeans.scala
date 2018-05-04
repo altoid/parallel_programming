@@ -63,7 +63,8 @@ class KMeans {
   }
 
   def update(classified: GenMap[Point, GenSeq[Point]], oldMeans: GenSeq[Point]): GenSeq[Point] = {
-    ???
+    // classified maps a given mean to the data points closest to it.
+    oldMeans.map(m => findAverage(m, classified(m))).toSeq
   }
 
   def converged(eta: Double)(oldMeans: GenSeq[Point], newMeans: GenSeq[Point]): Boolean = {
