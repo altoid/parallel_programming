@@ -27,51 +27,82 @@ package object barneshut {
 
   sealed abstract class Quad {
     def massX: Float
-
     def massY: Float
-
     def mass: Float
-
     def centerX: Float
-
     def centerY: Float
-
     def size: Float
-
-    def total: Int
-
+    def total: Int  // total # of bodies in the cell
     def insert(b: Body): Quad
   }
 
   case class Empty(centerX: Float, centerY: Float, size: Float) extends Quad {
-    def massX: Float = ???
-    def massY: Float = ???
-    def mass: Float = ???
-    def total: Int = ???
-    def insert(b: Body): Quad = ???
+    // coordinates of center of cell; length of side of the cell.
+    def massX: Float = centerX
+    def massY: Float = centerY
+    def mass: Float = 0
+    def total: Int = 0
+    def insert(b: Body): Quad = Leaf(centerX, centerY, size, Seq(b)) // case class, 'new' not needed
   }
 
   case class Fork(
     nw: Quad, ne: Quad, sw: Quad, se: Quad
   ) extends Quad {
-    val centerX: Float = ???
-    val centerY: Float = ???
-    val size: Float = ???
-    val mass: Float = ???
-    val massX: Float = ???
-    val massY: Float = ???
-    val total: Int = ???
+    val quadrants = Seq(nw, ne, sw, se)
+    val centerX: Float = nw.centerX + (nw.size / 2)
+    val centerY: Float = nw.centerY + (nw.size / 2)
+    val size: Float = nw.size / 2
+    val mass: Float = quadrants.map(q => q.mass).sum
+    val massX: Float = {
+      if (mass == 0) centerX
+      else quadrants.map(q => q.mass * q.massX).sum / mass
+    }
+    val massY: Float = {
+      if (mass == 0) centerY
+      else quadrants.map(q => q.mass * q.massY).sum / mass
+    }
+    val total: Int = quadrants.map(q => q.total).sum
 
     def insert(b: Body): Fork = {
-      ???
+      // figure out which quadrant b goes into.  assume that it goes into exactly one of them.
+      if (b.x < centerX && b.y < centerY) {
+        Fork(nw.insert(b), ne, sw, se)
+      }
+      else if (b.x < centerX && b.y >= centerY) {
+        Fork(nw, ne, sw.insert(b), se)
+      }
+      else if (b.x >= centerX && b.y < centerY) {
+        Fork(nw, ne.insert(b), sw, se)
+      }
+      else {
+        Fork(nw, ne, sw, se.insert(b))
+      }
     }
   }
 
   case class Leaf(centerX: Float, centerY: Float, size: Float, bodies: Seq[Body])
   extends Quad {
-    val (mass, massX, massY) = (??? : Float, ??? : Float, ??? : Float)
-    val total: Int = ???
-    def insert(b: Body): Quad = ???
+    val mass = bodies.map(b => b.mass).sum
+    val massX = if (mass == 0) centerX else bodies.map(b => b.mass * b.x).sum / mass
+    val massY = if (mass == 0) centerY else bodies.map(b => b.mass * b.y).sum / mass
+    val total: Int = bodies.length
+    def insert(b: Body): Quad = {
+      // if the size is too small to be subdivided, just return a new leaf with the extra body
+      val newBodies = bodies :+ b
+      if (size <= minimumSize) {
+        Leaf(centerX, centerY, size, newBodies)
+      }
+      else {
+        val nw = Empty(centerX - size / 4, centerY - size / 4, size / 2)
+        val ne = Empty(centerX + size / 4, centerY - size / 4, size / 2)
+        val sw = Empty(centerX - size / 4, centerY + size / 4, size / 2)
+        val se = Empty(centerX + size / 4, centerY + size / 4, size / 2)
+
+        val f = Fork(nw, ne, sw, se)
+
+        newBodies.foldLeft(f)(_ insert _)
+      }
+    }
   }
 
   def minimumSize = 0.00001f
