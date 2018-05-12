@@ -16,18 +16,18 @@ class BarnesHutSuite extends FunSuite {
   // test cases for quad tree
 
 import FloatOps._
-  ignore("Empty: center of mass should be the center of the cell") {
+  test("Empty: center of mass should be the center of the cell") {
     val quad = Empty(51f, 46.3f, 5f)
     assert(quad.massX == 51f, s"${quad.massX} should be 51f")
     assert(quad.massY == 46.3f, s"${quad.massY} should be 46.3f")
   }
 
-  ignore("Empty: mass should be 0") {
+  test("Empty: mass should be 0") {
     val quad = Empty(51f, 46.3f, 5f)
     assert(quad.mass == 0f, s"${quad.mass} should be 0f")
   }
 
-  ignore("Empty: total should be 0") {
+  test("Empty: total should be 0") {
     val quad = Empty(51f, 46.3f, 5f)
     assert(quad.total == 0, s"${quad.total} should be 0")
   }
@@ -45,7 +45,7 @@ import FloatOps._
     assert(n4.mass ~= 3f)
   }
 
-  ignore("Leaf with 1 body") {
+  test("Leaf with 1 body") {
     val b = new Body(123f, 18f, 26f, 0f, 0f)
     val quad = Leaf(17.5f, 27.5f, 5f, Seq(b))
 
@@ -56,7 +56,7 @@ import FloatOps._
   }
 
 
-  ignore("Fork with 3 empty quadrants and 1 leaf (nw)") {
+  test("Fork with 3 empty quadrants and 1 leaf (nw)") {
     val b = new Body(123f, 18f, 26f, 0f, 0f)
     val nw = Leaf(17.5f, 27.5f, 5f, Seq(b))
     val ne = Empty(22.5f, 27.5f, 5f)
@@ -72,7 +72,7 @@ import FloatOps._
     assert(quad.total == 1, s"${quad.total} should be 1")
   }
 
-  ignore("Empty.insert(b) should return a Leaf with only that body") {
+  test("Empty.insert(b) should return a Leaf with only that body") {
     val quad = Empty(51f, 46.3f, 5f)
     val b = new Body(3f, 54f, 46f, 0f, 0f)
     val inserted = quad.insert(b)
