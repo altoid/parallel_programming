@@ -190,14 +190,14 @@ package object barneshut {
       // if b is out of bounds, find x and y coords of closest point in bounding square.
 
       var newx = math.max(b.x, boundaries.minX)
-      newx = math.min(newx, boundaries.maxX - minimumSize)
+      newx = math.min(newx, boundaries.maxX)
       var newy = math.max(b.y, boundaries.minY)
-      newy = math.min(newy, boundaries.maxY - minimumSize)
+      newy = math.min(newy, boundaries.maxY)
 
       // now decide which sector this body belongs in.
 
-      val sectorX: Int = ((newx - boundaries.minX) / sectorSize).toInt
-      val sectorY: Int = ((newy - boundaries.minY) / sectorSize).toInt
+      val sectorX: Int = ((newx - boundaries.minX) / sectorSize).toInt min (sectorPrecision - 1)
+      val sectorY: Int = ((newy - boundaries.minY) / sectorSize).toInt min (sectorPrecision - 1)
 
       var sector = apply(sectorX, sectorY)
 
@@ -208,7 +208,10 @@ package object barneshut {
     def apply(x: Int, y: Int) = matrix(y * sectorPrecision + x)
 
     def combine(that: SectorMatrix): SectorMatrix = {
-      ???
+      for (i <- 0 until matrix.length) {
+        matrix(i) = matrix(i).combine(that.matrix(i))
+      }
+      this
     }
 
     def toQuad(parallelism: Int): Quad = {
