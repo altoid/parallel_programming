@@ -5,21 +5,13 @@ package object barneshut {
 
   class Boundaries {
     var minX = Float.MaxValue
-
     var minY = Float.MaxValue
-
     var maxX = Float.MinValue
-
     var maxY = Float.MinValue
-
     def width = maxX - minX
-
     def height = maxY - minY
-
     def size = math.max(width, height)
-
     def centerX = minX + width / 2
-
     def centerY = minY + height / 2
 
     override def toString = s"Boundaries($minX, $minY, $maxX, $maxY)"
@@ -195,7 +187,21 @@ package object barneshut {
     for (i <- 0 until matrix.length) matrix(i) = new ConcBuffer
 
     def +=(b: Body): SectorMatrix = {
-      ???
+      // if b is out of bounds, find x and y coords of closest point in bounding square.
+
+      var newx = math.max(b.x, boundaries.minX)
+      newx = math.min(newx, boundaries.maxX - minimumSize)
+      var newy = math.max(b.y, boundaries.minY)
+      newy = math.min(newy, boundaries.maxY - minimumSize)
+
+      // now decide which sector this body belongs in.
+
+      val sectorX: Int = ((newx - boundaries.minX) / sectorSize).toInt
+      val sectorY: Int = ((newy - boundaries.minY) / sectorSize).toInt
+
+      var sector = apply(sectorX, sectorY)
+
+      sector += b
       this
     }
 
