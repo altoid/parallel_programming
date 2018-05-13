@@ -89,7 +89,7 @@ import FloatOps._
 
   // test cases for Body
 
-  ignore("Body.updated should do nothing for Empty quad trees") {
+  test("Body.updated should do nothing for Empty quad trees") {
     val b1 = new Body(123f, 18f, 26f, 0f, 0f)
     val body = b1.updated(Empty(50f, 60f, 5f))
 
@@ -97,7 +97,7 @@ import FloatOps._
     assert(body.yspeed == 0f)
   }
 
-  ignore("Body.updated should take bodies in a Leaf into account") {
+  test("Body.updated should take bodies in a Leaf into account") {
     val b1 = new Body(123f, 18f, 26f, 0f, 0f)
     val b2 = new Body(524.5f, 24.5f, 25.5f, 0f, 0f)
     val b3 = new Body(245f, 22.4f, 41f, 0f, 0f)
